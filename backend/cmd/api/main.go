@@ -25,6 +25,9 @@ func main() {
 		log.Fatalf("database: %v", err)
 	}
 	defer store.Close()
+	if err := store.RunMigrations(ctx, cfg.MigrationsDir); err != nil {
+		log.Fatalf("migrations: %v", err)
+	}
 
 	server := &http.Server{
 		Addr:              ":" + cfg.Port,

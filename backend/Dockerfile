@@ -8,6 +8,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /api ./cmd/api
 FROM gcr.io/distroless/static-debian12
 WORKDIR /
 COPY --from=build /api /api
+COPY migrations /migrations
 EXPOSE 8080
 USER nonroot:nonroot
 CMD ["/api"]
