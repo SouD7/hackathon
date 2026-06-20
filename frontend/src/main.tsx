@@ -340,6 +340,30 @@ function App() {
     });
   }
 
+  async function imageFileToDataURL(file: File): Promise<string> {
+    if (!file.type.startsWith("image/")) {
+      throw new Error("画像ファイルを選択してください。");
+    }
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      throw new Error("対応画像はJPEG、PNG、WebPです。iPhoneのHEIC画像はJPEGに変換してから選んでください。");
+    }
+    const source = await createImageBitmap(file);
+    const maxSide = 900;
+    const scale = Math.min(1, maxSide / Math.max(source.width, source.height));
+    const width = Math.max(1, Math.round(source.width * scale));
+    const height = Math.max(1, Math.round(source.height * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("画像を処理できませんでした。");
+    }
+    context.drawImage(source, 0, 0, width, height);
+    source.close();
+    return canvas.toDataURL("image/jpeg", 0.72);
+  }
+
   async function createListing(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formElement = event.currentTarget;
@@ -351,11 +375,11 @@ function App() {
         setNotice("画像は5枚まで選択できます。");
         return;
       }
-      if (images.some((image) => image.size > 560000)) {
-        setNotice("画像が大きすぎます。1枚あたり500KB以下の画像を選んでください。");
+      if (images.some((image) => image.size > 12000000)) {
+        setNotice("画像が大きすぎます。1枚あたり12MB以下の画像を選んでください。");
         return;
       }
-      const imageURLs = await Promise.all(images.map(fileToDataURL));
+      const imageURLs = await Promise.all(images.map(imageFileToDataURL));
       await request<Listing>("/api/listings", {
         method: "POST",
         body: JSON.stringify({
@@ -1118,7 +1142,7 @@ function App() {
             <input name="title" placeholder="例: 経済学の教科書" required />
             <input name="price" type="number" min="1" placeholder="価格（円）" required />
             <input name="images" type="file" accept="image/*" multiple />
-            <small className="form-hint">画像は5枚まで、一覧では1枚目を表示します。</small>
+            <small className="form-hint">画像は5枚まで。大きい写真は自動で軽くして保存します。</small>
             <select name="condition" required defaultValue="">
               <option value="" disabled>
                 状態を選択
@@ -1130,6 +1154,7 @@ function App() {
               ))}
             </select>
             <textarea name="description" placeholder="メモ、補足" rows={6} />
+            {notice && <p className="notice inline-notice">{notice}</p>}
             <div className="form-actions">
               <button type="button" className="secondary" onClick={generateDescription}>
                 <Bot size={16} /> AI説明生成
