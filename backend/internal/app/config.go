@@ -6,25 +6,31 @@ import (
 )
 
 type Config struct {
-	Port          string
-	DatabaseURL   string
-	JWTSecret     string
-	GeminiAPIKey  string
-	GeminiModel   string
-	CORSOrigin    string
-	MigrationsDir string
+	Port           string
+	DatabaseURL    string
+	JWTSecret      string
+	GeminiAPIKey   string
+	GeminiModel    string
+	VertexProject  string
+	VertexLocation string
+	VertexModel    string
+	CORSOrigin     string
+	MigrationsDir  string
 }
 
 func LoadConfig() Config {
 	loadDotEnv()
 	return Config{
-		Port:          env("PORT", "8080"),
-		DatabaseURL:   env("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/campus_market?sslmode=disable"),
-		JWTSecret:     env("JWT_SECRET", "dev-secret-change-me"),
-		GeminiAPIKey:  os.Getenv("GEMINI_API_KEY"),
-		GeminiModel:   env("GEMINI_MODEL", "gemini-2.5-flash-lite"),
-		CORSOrigin:    env("CORS_ORIGIN", "http://localhost:5173"),
-		MigrationsDir: env("MIGRATIONS_DIR", "migrations"),
+		Port:           env("PORT", "8080"),
+		DatabaseURL:    env("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/campus_market?sslmode=disable"),
+		JWTSecret:      env("JWT_SECRET", "dev-secret-change-me"),
+		GeminiAPIKey:   os.Getenv("GEMINI_API_KEY"),
+		GeminiModel:    env("GEMINI_MODEL", "gemini-2.5-flash-lite"),
+		VertexProject:  env("VERTEX_AI_PROJECT", ""),
+		VertexLocation: env("VERTEX_AI_LOCATION", "us-central1"),
+		VertexModel:    env("VERTEX_AI_MODEL", "gemini-2.5-flash-lite"),
+		CORSOrigin:     env("CORS_ORIGIN", "http://localhost:5173"),
+		MigrationsDir:  env("MIGRATIONS_DIR", "migrations"),
 	}
 }
 
