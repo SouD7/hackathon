@@ -1154,7 +1154,6 @@ function App() {
               ))}
             </select>
             <textarea name="description" placeholder="メモ、補足" rows={6} />
-            {notice && <p className="notice inline-notice">{notice}</p>}
             <div className="form-actions">
               <button type="button" className="secondary" onClick={generateDescription}>
                 <Bot size={16} /> AI説明生成
