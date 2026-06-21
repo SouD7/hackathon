@@ -22,7 +22,7 @@ type Server struct {
 type contextUserKey struct{}
 
 func NewServer(cfg app.Config, store *db.Store) http.Handler {
-	s := &Server{cfg: cfg, store: store, gemini: ai.NewGemini(cfg.GeminiAPIKey, cfg.GeminiModel)}
+	s := &Server{cfg: cfg, store: store, gemini: ai.NewGemini(cfg.GeminiAPIKey, cfg.GeminiModel, cfg.VertexProject, cfg.VertexLocation, cfg.VertexModel)}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", s.health)
 	mux.HandleFunc("POST /api/auth/register", s.register)
